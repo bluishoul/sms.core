@@ -2,12 +2,41 @@ buildscript {
     repositories { mavenCentral() }
 }
 
-plugins { id "io.spring.dependency-management" version "1.0.5.RELEASE" }
+plugins {
+    id "io.spring.dependency-management" version "1.0.5.RELEASE"
+    id "maven-publish"
+}
 
 ext { springBootVersion = '2.1.6.RELEASE' }
 
 apply plugin: 'java'
 apply plugin: 'idea'
+
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/bluishoul/sms.core")
+            credentials {
+                username = project.findProperty("gpr.user") ?: System.getenv("GPR_USER")
+                password = project.findProperty("gpr.key") ?: System.getenv("GPR_API_KEY")
+            }
+        }
+    }
+    publications {
+        gpr(MavenPublication) {
+            from components.java
+        }
+
+        maven(MavenPublication) {
+            groupId = 'com.jhbshow.sms'
+            artifactId = 'core'
+            version = '0.1.0'
+
+            from components.java
+        }
+    }
+}
 
 sourceCompatibility = 1.8
 
